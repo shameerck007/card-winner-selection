@@ -12,47 +12,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <style>
 :root {
-  --bg:        #f2ede4;
-  --bg2:       #ffffff;
-  --bg3:       #f8f5ef;
-  --bg4:       #ede8de;
-  --border:    rgba(90,70,40,0.10);
-  --border2:   rgba(90,70,40,0.18);
-  --gold:      #b5801a;
-  --gold2:     #d4992a;
-  --gold-lt:   #e8c46a;
-  --gold-dim:  rgba(181,128,26,0.10);
-  --gold-glow: rgba(181,128,26,0.28);
-  --side-bg:   #162b20;
-  --side-bg2:  #1e3829;
-  --side-act:  rgba(181,128,26,0.18);
-  --side-txt:  rgba(255,255,255,0.70);
-  --side-txt2: rgba(255,255,255,0.38);
-  --green:     #2d6a4f;
-  --green2:    #40916c;
-  --green-dim: rgba(45,106,79,0.12);
-  --red:       #c0392b;
-  --red-dim:   rgba(192,57,43,0.10);
-  --text:      #1e2d1e;
-  --text2:     #5a6e58;
-  --text3:     #8fa08b;
-  --sidebar-w: 248px;
-  --safe-top:    env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-left:   env(safe-area-inset-left,  0px);
-  --safe-right:  env(safe-area-inset-right,  0px);
-  --radius:    12px;
-  --radius-lg: 18px;
-  --tap:       44px;
-  --shadow:    0 1px 3px rgba(30,45,30,0.07), 0 4px 14px rgba(30,45,30,0.05);
-  --shadow-lg: 0 4px 24px rgba(30,45,30,0.13);
+  --bg:#f2ede4;--bg2:#ffffff;--bg3:#f8f5ef;--bg4:#ede8de;
+  --border:rgba(90,70,40,0.10);--border2:rgba(90,70,40,0.18);
+  --gold:#b5801a;--gold2:#d4992a;--gold-lt:#e8c46a;
+  --gold-dim:rgba(181,128,26,0.10);--gold-glow:rgba(181,128,26,0.28);
+  --side-bg:#162b20;--side-bg2:#1e3829;--side-act:rgba(181,128,26,0.18);
+  --side-txt:rgba(255,255,255,0.70);--side-txt2:rgba(255,255,255,0.38);
+  --green:#2d6a4f;--green2:#40916c;--green-dim:rgba(45,106,79,0.12);
+  --red:#c0392b;--red-dim:rgba(192,57,43,0.10);
+  --text:#1e2d1e;--text2:#5a6e58;--text3:#8fa08b;
+  --sidebar-w:248px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);
+  --radius:12px;--radius-lg:18px;--tap:44px;
+  --shadow:0 1px 3px rgba(30,45,30,0.07),0 4px 14px rgba(30,45,30,0.05);
+  --shadow-lg:0 4px 24px rgba(30,45,30,0.13);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{height:-webkit-fill-available;scroll-behavior:smooth}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;min-height:-webkit-fill-available;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E")}
-
-/* LAYOUT */
 .app-shell{position:relative;z-index:1;display:flex;min-height:100vh}
 
 /* SIDEBAR */
@@ -87,37 +66,40 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;back
 .mobile-topbar{display:none}
 .bottom-nav{display:none}
 
-/* MOBILE */
+/* ── MOBILE OVERRIDES ── */
 @media(max-width:768px){
   .sidebar{display:none}
   .main-area{margin-left:0}
   .topbar{display:none}
-  .page-content{padding:16px 14px;padding-bottom:calc(80px + var(--safe-bottom) + 12px);max-width:100%}
-  .mobile-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:calc(10px + var(--safe-top));background:var(--side-bg);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:40}
+  /* tighter page padding on mobile */
+  .page-content{padding:10px 10px;padding-bottom:calc(68px + var(--safe-bottom) + 8px);max-width:100%}
+  .mobile-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;padding-top:calc(8px + var(--safe-top));background:var(--side-bg);border-bottom:1px solid rgba(255,255,255,0.07);position:sticky;top:0;z-index:40}
   .mob-brand{display:flex;align-items:center;gap:10px}
   .mob-brand-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--gold2),#8a5e0e);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
   .mob-brand-text{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:#fff}
   .mob-chitty-name{font-size:11px;color:var(--gold-lt);display:none}
   .mob-sound-btn{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.75);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:50;background:var(--bg2);border-top:1px solid var(--border);padding-bottom:var(--safe-bottom);box-shadow:0 -4px 20px rgba(30,45,30,0.10)}
-  .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;gap:4px;background:none;border:none;cursor:pointer;min-height:var(--tap);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.18s;position:relative}
+  .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;gap:3px;background:none;border:none;cursor:pointer;min-height:var(--tap);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;transition:color 0.18s;position:relative}
   .mob-nav-btn.active{color:var(--gold)}
   .mob-nav-btn.active::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:28px;height:2px;border-radius:0 0 2px 2px;background:var(--gold2)}
-  .mob-nav-icon{font-size:20px}
+  .mob-nav-icon{font-size:18px}
   .mob-badge{position:absolute;top:6px;right:calc(50% - 17px);background:var(--gold2);color:#fff;font-size:9px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg2)}
+  /* compact section header */
+  .sec-head{margin-bottom:10px}
+  .sec-head-title{font-size:18px}
 }
 
 /* SECTION HEADER */
-.sec-head{margin-bottom:24px}
+.sec-head{margin-bottom:20px}
 .sec-head-eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:6px}
 .sec-head-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text);line-height:1.2}
-@media(max-width:768px){.sec-head-title{font-size:22px}}
 
 /* CARD */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:18px;box-shadow:var(--shadow)}
 .card-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:8px}
 .card-title::before{content:'';display:block;width:3px;height:14px;border-radius:2px;background:linear-gradient(180deg,var(--gold2),var(--gold))}
-@media(max-width:768px){.card{padding:16px}}
+@media(max-width:768px){.card{padding:14px}.card-title{margin-bottom:12px}}
 
 /* FORMS */
 .field-group{margin-bottom:16px}
@@ -164,49 +146,86 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn-sm-danger:hover{background:var(--red-dim)}
 
 /* DRAW PAGE */
-.draw-page{display:flex;flex-direction:column;gap:20px}
-.draw-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
-.stat-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
-.stat-value{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);line-height:1}
+.draw-page{display:flex;flex-direction:column;gap:12px}
+.draw-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 10px;box-shadow:var(--shadow)}
+.stat-label{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.stat-value{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text);line-height:1}
 .stat-value.gold{color:var(--gold)}
 .stat-value.green{color:var(--green2)}
-@media(max-width:480px){.stat-value{font-size:22px}}
+@media(max-width:480px){.stat-value{font-size:20px}}
 .arena-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;position:relative;box-shadow:var(--shadow)}
-.arena-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
-.arena-title{font-size:13px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
-.arena-title-dot{width:8px;height:8px;border-radius:50%;background:var(--green2);box-shadow:0 0 7px var(--green2);animation:dotPulse 2s ease-in-out infinite}
-.arena-grid-wrap{padding:20px}
+.arena-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3)}
+.arena-title{font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px}
+.arena-title-dot{width:7px;height:7px;border-radius:50%;background:var(--green2);box-shadow:0 0 7px var(--green2);animation:dotPulse 2s ease-in-out infinite}
+.arena-grid-wrap{padding:10px}
 
-/* CARD GRID */
+/* ═══════════════════════════════════════════════════
+   CARD GRID — MOBILE FIX
+   4 columns on mobile so all cards fit without scrolling
+   ═══════════════════════════════════════════════════ */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
-@media(max-width:600px){.card-grid{grid-template-columns:repeat(2,1fr);gap:12px}}
-@media(min-width:601px) and (max-width:900px){.card-grid{grid-template-columns:repeat(3,1fr)}}
+
+@media(max-width:768px){
+  .card-grid{
+    /* 4 compact columns — fits 12+ cards on one screen */
+    grid-template-columns:repeat(4,1fr);
+    gap:7px;
+  }
+}
+@media(max-width:360px){
+  .card-grid{
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+  }
+}
+@media(min-width:769px) and (max-width:1000px){
+  .card-grid{grid-template-columns:repeat(4,1fr)}
+}
 
 /* FLIP CARD */
 .flip-card{aspect-ratio:3/4;perspective:900px;cursor:pointer;user-select:none;touch-action:manipulation}
 .flip-card.revealed{cursor:default;pointer-events:none}
-.flip-card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1),box-shadow 0.2s;border-radius:14px;box-shadow:var(--shadow-lg)}
+.flip-card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 0.65s cubic-bezier(0.4,0.2,0.2,1),box-shadow 0.2s;border-radius:10px;box-shadow:var(--shadow-lg)}
 .flip-card.revealed .flip-card-inner{transform:rotateY(180deg)}
 .flip-card:not(.revealed):active .flip-card-inner{transform:scale(0.94) rotateY(8deg)}
-.flip-front,.flip-back{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 10px;text-align:center;overflow:hidden}
+.flip-front,.flip-back{position:absolute;inset:0;border-radius:10px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 4px;text-align:center;overflow:hidden}
+
+/* ── mobile: smaller card content ── */
 .flip-front{background:linear-gradient(155deg,var(--side-bg) 0%,var(--side-bg2) 50%,var(--side-bg) 100%);border:1px solid rgba(255,255,255,0.10)}
-.flip-front::before{content:'';position:absolute;inset:0;border-radius:14px;background:repeating-linear-gradient(55deg,transparent 0,transparent 18px,rgba(255,255,255,0.02) 18px,rgba(255,255,255,0.02) 19px)}
-.flip-front::after{content:'';position:absolute;inset:0;border-radius:14px;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,0.05) 50%,transparent 70%);animation:shimmer 5s ease-in-out infinite;background-size:200% 100%}
+.flip-front::before{content:'';position:absolute;inset:0;border-radius:10px;background:repeating-linear-gradient(55deg,transparent 0,transparent 18px,rgba(255,255,255,0.02) 18px,rgba(255,255,255,0.02) 19px)}
+.flip-front::after{content:'';position:absolute;inset:0;border-radius:10px;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,0.05) 50%,transparent 70%);animation:shimmer 5s ease-in-out infinite;background-size:200% 100%}
 @keyframes shimmer{0%{background-position:200% center;opacity:0}30%{opacity:1}70%{opacity:1}100%{background-position:-200% center;opacity:0}}
-.front-num{position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,0.55);z-index:3}
-.front-icon{font-size:28px;position:relative;z-index:2}
-.front-label{font-size:10px;font-weight:600;letter-spacing:2px;color:rgba(255,255,255,0.45);text-transform:uppercase;position:relative;z-index:2}
-.front-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:9px;font-weight:600;letter-spacing:1.5px;color:rgba(255,255,255,0.35);z-index:3;text-transform:uppercase;animation:hintPulse 2.5s ease-in-out infinite}
-@keyframes hintPulse{0%,100%{opacity:.25}50%{opacity:.75}}
+.front-num{position:absolute;top:4px;right:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:2px 4px;font-size:7px;font-weight:700;letter-spacing:0.8px;color:rgba(255,255,255,0.55);z-index:3}
+.front-icon{font-size:18px;position:relative;z-index:2}
+.front-label{font-size:7px;font-weight:600;letter-spacing:1.2px;color:rgba(255,255,255,0.40);text-transform:uppercase;position:relative;z-index:2}
+.front-hint{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:6px;font-weight:600;letter-spacing:0.8px;color:rgba(255,255,255,0.28);z-index:3;text-transform:uppercase;animation:hintPulse 2.5s ease-in-out infinite}
+@keyframes hintPulse{0%,100%{opacity:.2}50%{opacity:.7}}
 .flip-back{transform:rotateY(180deg)}
 .flip-card.revealed .flip-back{box-shadow:0 0 0 2px var(--gold2),0 8px 28px rgba(30,45,30,0.25)}
-.back-rank{font-size:9px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,0.55);text-transform:uppercase}
-.back-trophy{font-size:22px}
-.back-line{width:28px;height:1px;background:rgba(255,255,255,0.22)}
-.back-name{font-family:'Playfair Display',serif;font-size:15px;color:#fff;line-height:1.2;word-break:break-word}
-.back-month{font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(255,255,255,0.65);text-transform:uppercase}
-.back-amount{font-family:'Playfair Display',serif;font-size:14px;color:var(--gold-lt)}
+.back-rank{font-size:7px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.55);text-transform:uppercase}
+.back-trophy{font-size:14px}
+.back-line{width:20px;height:1px;background:rgba(255,255,255,0.22)}
+.back-name{font-family:'Playfair Display',serif;font-size:10px;color:#fff;line-height:1.2;word-break:break-word}
+.back-month{font-size:7px;font-weight:600;letter-spacing:0.5px;color:rgba(255,255,255,0.65);text-transform:uppercase}
+.back-amount{font-family:'Playfair Display',serif;font-size:9px;color:var(--gold-lt)}
+
+/* ── desktop: restore bigger card content ── */
+@media(min-width:769px){
+  .flip-front,.flip-back{border-radius:14px;gap:6px;padding:14px 10px}
+  .flip-card-inner{border-radius:14px}
+  .front-num{top:10px;right:10px;padding:3px 8px;font-size:9px;border-radius:6px;letter-spacing:1px}
+  .front-icon{font-size:28px}
+  .front-label{font-size:10px;letter-spacing:2px}
+  .front-hint{bottom:10px;font-size:9px;letter-spacing:1.5px}
+  .back-rank{font-size:9px;letter-spacing:3px}
+  .back-trophy{font-size:22px}
+  .back-line{width:28px}
+  .back-name{font-size:15px}
+  .back-month{font-size:9px;letter-spacing:1px}
+  .back-amount{font-size:14px}
+}
+
 .ct-0 .flip-back{background:linear-gradient(145deg,#1e3a2a,#0f2016)}
 .ct-1 .flip-back{background:linear-gradient(145deg,#3a2010,#1e1008)}
 .ct-2 .flip-back{background:linear-gradient(145deg,#162b20,#0a1a12)}
@@ -243,8 +262,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .flip-card.dealing{animation:dealIn 0.5s cubic-bezier(0.22,1.4,0.36,1) both;pointer-events:none !important}
 
 /* WINNERS PANEL */
-.winners-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;box-shadow:var(--shadow)}
-.winners-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.winners-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
+.winners-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .winners-panel-title{font-size:12px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:8px;letter-spacing:1px;text-transform:uppercase}
 .winners-panel-count{font-size:11px;font-weight:700;color:var(--text3);background:var(--bg3);border:1px solid var(--border2);border-radius:99px;padding:3px 10px}
 .winners-list{display:flex;flex-direction:column;gap:8px}
@@ -361,7 +380,6 @@ td.c{text-align:center}
 <canvas id="particleCanvas"></canvas>
 <div class="app-shell">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-icon">🃏</div>
@@ -385,7 +403,6 @@ td.c{text-align:center}
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main-area">
     <div class="topbar">
       <div class="topbar-title" id="topbarTitle">Chitty Setup</div>
@@ -395,7 +412,6 @@ td.c{text-align:center}
       </div>
     </div>
 
-    <!-- Mobile topbar -->
     <div class="mobile-topbar">
       <div class="mob-brand">
         <div class="mob-brand-icon">🃏</div>
@@ -545,7 +561,6 @@ td.c{text-align:center}
   </main>
 </div>
 
-<!-- Mobile nav -->
 <nav class="bottom-nav">
   <button class="mob-nav-btn active" onclick="switchTab(0)" id="navM0"><span class="mob-nav-icon">⚙️</span>Setup</button>
   <button class="mob-nav-btn" onclick="switchTab(1)" id="navM1"><span class="mob-nav-icon">🃏</span>Draw</button>
@@ -556,7 +571,6 @@ td.c{text-align:center}
   </button>
 </nav>
 
-<!-- Winner Modal -->
 <div class="winner-overlay" id="winnerOverlay">
   <div class="winner-modal">
     <span class="popup-emoji" id="popupEmoji">🏆</span>
@@ -575,13 +589,115 @@ td.c{text-align:center}
 </div>
 
 <script>
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
 let participants=[],winners=[],scratchCards=[];
 let soundEnabled=true,audioCtx=null,popupOpen=false,isShuffling=false;
+let pendingWinData=null; // queued for speech on modal click (iOS workaround)
+
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MONTHS_SHORT=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-function getMonthLabel(idx){const sm=parseInt(document.getElementById('startMonth').value)||0;const yr=new Date().getFullYear();const off=sm+idx;const mi=off%12;const yo=Math.floor(off/12);return MONTHS_SHORT[mi]+" '"+String(yr+yo).slice(-2);}
+
+function getMonthLabel(idx){
+  const sm=parseInt(document.getElementById('startMonth').value)||0;
+  const yr=new Date().getFullYear();const off=sm+idx;const mi=off%12;const yo=Math.floor(off/12);
+  return MONTHS_SHORT[mi]+" '"+String(yr+yo).slice(-2);
+}
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+/* ═══════════════════════════════════════════════════════════════
+   SPEECH — iOS & Android fix
+   
+   Both iOS Safari and Android Chrome require speechSynthesis.speak()
+   to be called directly inside a user-gesture event handler.
+   setTimeout / async wrappers break it on mobile.
+   
+   Strategy:
+   1. warmUpSpeech() on first touch — fires a silent utterance to
+      unlock the speech engine (iOS requires this).
+   2. speak() is called from inside the touchend/click handler chain
+      directly (no setTimeout delay).
+   3. pendingWinData stores the announcement payload. If speech didn't
+      start (e.g. iOS async timing), the winner-modal click re-tries.
+   4. iOS keep-alive: speechSynthesis pauses itself after ~15s on iOS;
+      we resume it with a periodic timer while speaking.
+═══════════════════════════════════════════════════════════════ */
+let speechUnlocked=false;
+let cachedVoices=[];
+
+function loadVoices(){
+  if(!('speechSynthesis' in window))return;
+  const v=window.speechSynthesis.getVoices();
+  if(v.length)cachedVoices=v;
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged=loadVoices;
+}
+
+function warmUpSpeech(){
+  if(speechUnlocked||!('speechSynthesis' in window))return;
+  speechUnlocked=true;
+  const u=new SpeechSynthesisUtterance('');u.volume=0;
+  try{window.speechSynthesis.speak(u);}catch(e){}
+}
+
+function getBestVoice(){
+  const voices=cachedVoices.length?cachedVoices:window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang==='en-IN')||
+         voices.find(v=>v.name.includes('Samantha'))||
+         voices.find(v=>v.name.includes('Google UK English Female'))||
+         voices.find(v=>v.name.includes('Google')&&v.lang.startsWith('en'))||
+         voices.find(v=>v.lang.startsWith('en'))||null;
+}
+
+function doSpeak(rank,name,month,amount){
+  if(!soundEnabled||!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  const ords=['','First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth'];
+  const rw=rank<=10?ords[rank]:'Number '+rank;
+  const txt='Congratulations! The '+rw+' winner is '+name+'! '+
+            name+' wins the Chitty for '+month+
+            '. The amount is '+amount.toLocaleString('en-IN')+' Rupees!';
+  const u=new SpeechSynthesisUtterance(txt);
+  u.rate=0.88;u.pitch=1.1;u.volume=1;
+  const voice=getBestVoice();if(voice)u.voice=voice;
+  const ind=document.getElementById('speakingIndicator');
+  u.onstart=()=>ind.classList.add('active');
+  u.onend=u.onerror=()=>ind.classList.remove('active');
+  try{window.speechSynthesis.speak(u);}catch(e){console.warn('TTS:',e);return;}
+  /* iOS keep-alive: prevent auto-pause after 15s */
+  if(/iP(hone|ad|od)/i.test(navigator.userAgent)){
+    const t=setInterval(()=>{
+      if(window.speechSynthesis.speaking){window.speechSynthesis.pause();window.speechSynthesis.resume();}
+      else clearInterval(t);
+    },10000);
+  }
+}
+
+function announceWinner(rank,name,month,amount){
+  // Store for iOS retry via modal click
+  pendingWinData={rank,name,month,amount};
+  doSpeak(rank,name,month,amount);
+}
+
+/* iOS retry: if speak() was blocked by async timing, the tap on the
+   winner modal (which IS a fresh gesture) will retry. */
+document.getElementById('winnerOverlay').addEventListener('click',function(){
+  if(pendingWinData&&soundEnabled&&!window.speechSynthesis.speaking){
+    doSpeak(pendingWinData.rank,pendingWinData.name,pendingWinData.month,pendingWinData.total||pendingWinData.amount);
+  }
+},{capture:false,passive:true});
+
+function stopSpeaking(){
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
+  document.getElementById('speakingIndicator').classList.remove('active');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV / TABS
+═══════════════════════════════════════════════════════════════ */
 const TAB_TITLES=['Chitty Setup','Live Draw','Winners Report','Chitty History'];
 function switchTab(n){
   document.querySelectorAll('.tab-content').forEach((el,i)=>el.classList.toggle('active',i===n));
@@ -592,6 +708,9 @@ function switchTab(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   SETUP
+═══════════════════════════════════════════════════════════════ */
 function recalc(){const m=parseFloat(document.getElementById('monthly').value)||0;document.getElementById('totalBox').textContent='₹ '+(m*participants.length).toLocaleString('en-IN');validateStart();renderChips();}
 function validateStart(){const sn=document.getElementById('sessionName').value.trim();const mp=parseFloat(document.getElementById('monthly').value);document.getElementById('startBtn').disabled=!(sn&&mp>0&&participants.length>=2);}
 function addParticipant(){const inp=document.getElementById('nameInput');const name=inp.value.trim();if(!name)return;participants.push({id:Date.now(),name});inp.value='';recalc();setTimeout(()=>inp.focus(),50);}
@@ -603,49 +722,115 @@ function renderChips(){
     grid.innerHTML=participants.map((p,i)=>`<div class="chip"><span><span class="chip-num">${String(i+1).padStart(2,'0')}.</span>${escHtml(p.name)}</span><button class="chip-del" onclick="removeParticipant(${p.id})" aria-label="Remove">×</button></div>`).join('');}
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   AUDIO
+═══════════════════════════════════════════════════════════════ */
 function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx;}
 function playTone(freq,type,dur,vol,delay){if(!soundEnabled)return;try{const ctx=getAudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type=type||'sine';osc.frequency.setValueAtTime(freq,ctx.currentTime+(delay||0));gain.gain.setValueAtTime(0,ctx.currentTime+(delay||0));gain.gain.linearRampToValueAtTime(vol||0.25,ctx.currentTime+(delay||0)+0.01);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(delay||0)+dur);osc.start(ctx.currentTime+(delay||0));osc.stop(ctx.currentTime+(delay||0)+dur);}catch(e){}}
 function playShuffleSound(){if(!soundEnabled)return;[180,200,220,240,260,280,300,320].forEach((f,i)=>playTone(f,'sawtooth',0.06,0.12,i*0.055));}
 function playDealSound(delay){playTone(800,'triangle',0.07,0.15,delay);playTone(600,'triangle',0.05,0.08,delay+0.04);}
 function playRevealSound(){[{f:523,d:.1,v:.3,t:0},{f:659,d:.1,v:.3,t:.12},{f:784,d:.1,v:.3,t:.24},{f:1047,d:.22,v:.35,t:.36},{f:880,d:.1,v:.25,t:.46},{f:1047,d:.35,v:.4,t:.56}].forEach(n=>playTone(n.f,'triangle',n.d,n.v,n.t));}
 function playVictory(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>playTone(f,'triangle',.28,.35,[0,.1,.2,.3,.45,.55,.65][i]));}
-function toggleSound(){soundEnabled=!soundEnabled;document.getElementById('soundBtnD').textContent=soundEnabled?'🔊 Sound On':'🔇 Sound Off';document.getElementById('soundBtnM').textContent=soundEnabled?'🔊':'🔇';if(!soundEnabled){window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('speakingIndicator').classList.remove('active');}}
+function toggleSound(){soundEnabled=!soundEnabled;document.getElementById('soundBtnD').textContent=soundEnabled?'🔊 Sound On':'🔇 Sound Off';document.getElementById('soundBtnM').textContent=soundEnabled?'🔊':'🔇';if(!soundEnabled)stopSpeaking();}
 
-function announceWinner(rank,name,month,amount){if(!soundEnabled||!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const ords=['','First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth'];const rw=rank<=10?ords[rank]:'Number '+rank;const text=`Congratulations! The ${rw} winner is ${name}! ${name} wins the Chitty for ${month}. The amount is ${amount.toLocaleString('en-IN')} Rupees!`;const utt=new SpeechSynthesisUtterance(text);utt.rate=.88;utt.pitch=1.1;utt.volume=1;const v=window.speechSynthesis.getVoices();const pv=v.find(x=>x.lang.startsWith('en')&&(x.name.includes('Google')||x.name.includes('Samantha')||x.name.includes('Daniel')))||v.find(x=>x.lang.startsWith('en'));if(pv)utt.voice=pv;const ind=document.getElementById('speakingIndicator');utt.onstart=()=>ind.classList.add('active');utt.onend=utt.onerror=()=>ind.classList.remove('active');setTimeout(()=>window.speechSynthesis.speak(utt),600);}
-function stopSpeaking(){if('speechSynthesis' in window)window.speechSynthesis.cancel();document.getElementById('speakingIndicator').classList.remove('active');}
-
-const pCanvas=document.getElementById('particleCanvas');const pCtx=pCanvas.getContext('2d');let fwParticles=[];
+/* ═══════════════════════════════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════════════════════════════ */
+const pCanvas=document.getElementById('particleCanvas'),pCtx=pCanvas.getContext('2d');let fwParticles=[];
 function resizeCanvas(){pCanvas.width=window.innerWidth;pCanvas.height=window.innerHeight;}resizeCanvas();window.addEventListener('resize',resizeCanvas);
-class FWParticle{constructor(x,y,color){this.x=x;this.y=y;this.vx=(Math.random()-.5)*14;this.vy=(Math.random()-.5)*14-4;this.r=2+Math.random()*5;this.color=color;this.alpha=1;this.life=1;this.gravity=.28+Math.random()*.12;this.rot=Math.random()*Math.PI*2;this.drot=(Math.random()-.5)*.22;}update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.gravity;this.rot+=this.drot;this.life-=.018;this.alpha=Math.max(0,this.life);}draw(){pCtx.save();pCtx.globalAlpha=this.alpha;pCtx.translate(this.x,this.y);pCtx.rotate(this.rot);pCtx.fillStyle=this.color;pCtx.beginPath();pCtx.rect(-this.r/2,-this.r/2,this.r,this.r);pCtx.fill();pCtx.restore();}}
-function spawnFW(x,y){const c=['#d4992a','#f5d020','#2d6a4f','#40916c','#b5801a','#e8c46a','#8a5e0e'];for(let i=0;i<65;i++)fwParticles.push(new FWParticle(x,y,c[Math.floor(Math.random()*c.length)]));}
+class FWParticle{constructor(x,y,c){this.x=x;this.y=y;this.vx=(Math.random()-.5)*14;this.vy=(Math.random()-.5)*14-4;this.r=2+Math.random()*5;this.color=c;this.life=1;this.alpha=1;this.gravity=.28+Math.random()*.12;this.rot=Math.random()*Math.PI*2;this.drot=(Math.random()-.5)*.22;}update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.gravity;this.rot+=this.drot;this.life-=.018;this.alpha=Math.max(0,this.life);}draw(){pCtx.save();pCtx.globalAlpha=this.alpha;pCtx.translate(this.x,this.y);pCtx.rotate(this.rot);pCtx.fillStyle=this.color;pCtx.beginPath();pCtx.rect(-this.r/2,-this.r/2,this.r,this.r);pCtx.fill();pCtx.restore();}}
+function spawnFW(x,y){const c=['#d4992a','#f5d020','#2d6a4f','#40916c','#b5801a','#e8c46a','#8a5e0e'];for(let i=0;i<65;i++)fwParticles.push(new FWParticle(x,y,c[~~(Math.random()*c.length)]));}
 let fwRunning=false;
-function fwLoop(){pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);fwParticles=fwParticles.filter(p=>p.life>0);fwParticles.forEach(p=>{p.update();p.draw();});if(fwParticles.length>0)requestAnimationFrame(fwLoop);else fwRunning=false;}
+function fwLoop(){pCtx.clearRect(0,0,pCanvas.width,pCanvas.height);fwParticles=fwParticles.filter(p=>p.life>0);fwParticles.forEach(p=>{p.update();p.draw();});if(fwParticles.length)requestAnimationFrame(fwLoop);else fwRunning=false;}
 function triggerFW(x,y){spawnFW(x,y);if(!fwRunning){fwRunning=true;fwLoop();}}
 
-class FlipCard{constructor(el,name){this.el=el;this.name=name;this.revealed=false;el.addEventListener('touchend',e=>{e.preventDefault();this.onTap();},{passive:false});el.addEventListener('click',this.onTap.bind(this));}
-onTap(){if(this.revealed||popupOpen||isShuffling)return;getAudioCtx();this.reveal();}
-reveal(){if(this.revealed)return;this.revealed=true;this.el.classList.add('revealed');const monthly=parseFloat(document.getElementById('monthly').value)||0;const total=monthly*participants.length;const rank=winners.length+1;const month=getMonthLabel(rank-1);const winData={rank,name:this.name,month,total};const rect=this.el.getBoundingClientRect();const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;playRevealSound();setTimeout(()=>{triggerFW(cx,cy);showWinnerPopup(winData);this.el.style.transition='transform 0.35s ease, opacity 0.35s ease';this.el.style.transform='scale(0)';this.el.style.opacity='0';setTimeout(()=>this.el.remove(),380);},620);}}
+/* ═══════════════════════════════════════════════════════════════
+   FLIP CARD CLASS
+═══════════════════════════════════════════════════════════════ */
+class FlipCard{
+  constructor(el,name){
+    this.el=el;this.name=name;this.revealed=false;
+    /* touchend for mobile — warm up speech + audio on first real tap */
+    el.addEventListener('touchend',e=>{
+      e.preventDefault();
+      warmUpSpeech();   // unlock speech engine while inside gesture
+      getAudioCtx();    // unlock audio context
+      this.onTap();
+    },{passive:false});
+    el.addEventListener('click',()=>{
+      warmUpSpeech();
+      getAudioCtx();
+      this.onTap();
+    });
+  }
+  onTap(){if(this.revealed||popupOpen||isShuffling)return;this.reveal();}
+  reveal(){
+    if(this.revealed)return;this.revealed=true;this.el.classList.add('revealed');
+    const monthly=parseFloat(document.getElementById('monthly').value)||0;
+    const total=monthly*participants.length,rank=winners.length+1;
+    const month=getMonthLabel(rank-1);
+    const winData={rank,name:this.name,month,total};
+    const rect=this.el.getBoundingClientRect();
+    const cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+    playRevealSound();
+    setTimeout(()=>{
+      triggerFW(cx,cy);
+      showWinnerPopup(winData);
+      this.el.style.transition='transform 0.35s ease, opacity 0.35s ease';
+      this.el.style.transform='scale(0)';this.el.style.opacity='0';
+      setTimeout(()=>this.el.remove(),380);
+    },620);
+  }
+}
 
-function fisherYates(arr){for(let pass=0;pass<3;pass++){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}return arr;}
+/* ═══════════════════════════════════════════════════════════════
+   SHUFFLE / DEAL
+═══════════════════════════════════════════════════════════════ */
+function fisherYates(arr){for(let p=0;p<3;p++){for(let i=arr.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}return arr;}
 function runShuffleSequence(onComplete,isReshuffle){
-  isShuffling=true;const overlay=document.getElementById('shuffleOverlay'),sub=document.getElementById('shuffleSub');
-  overlay.classList.add('visible');sub.textContent=isReshuffle?'Reshuffling cards…':'Randomising cards…';playShuffleSound();
+  isShuffling=true;
+  const overlay=document.getElementById('shuffleOverlay'),sub=document.getElementById('shuffleSub');
+  overlay.classList.add('visible');sub.textContent=isReshuffle?'Reshuffling cards…':'Randomising cards…';
+  playShuffleSound();
   setTimeout(()=>{playShuffleSound();sub.textContent='Almost ready…';},900);
   setTimeout(()=>{
-    sub.textContent='Dealing cards…';const grid=document.getElementById('cardGrid');const nodes=[...grid.children];
-    if(nodes.length>=2){fisherYates(nodes);nodes.forEach((node,pos)=>{const n=node.querySelector('.front-num');if(n)n.textContent='#'+String(pos+1).padStart(2,'0');grid.appendChild(node);});}
-    overlay.classList.remove('visible');const cards=document.querySelectorAll('.flip-card');const STAGGER=100,DEAL_DUR=500;
-    cards.forEach((card,i)=>{const angle=Math.random()*Math.PI*2,dist=160+Math.random()*100;card.style.setProperty('--ox',Math.round(Math.cos(angle)*dist)+'px');card.style.setProperty('--oy',Math.round(Math.sin(angle)*dist-60)+'px');card.style.setProperty('--rot',((Math.random()-.5)*40)+'deg');card.style.animationDelay=(i*STAGGER)+'ms';card.classList.add('dealing');playDealSound(i*STAGGER/1000);setTimeout(()=>{card.classList.remove('dealing');card.style.animationDelay='';},i*STAGGER+DEAL_DUR+50);});
+    sub.textContent='Dealing cards…';
+    const grid=document.getElementById('cardGrid'),nodes=[...grid.children];
+    if(nodes.length>=2){fisherYates(nodes);nodes.forEach((n,pos)=>{const nm=n.querySelector('.front-num');if(nm)nm.textContent='#'+String(pos+1).padStart(2,'0');grid.appendChild(n);});}
+    overlay.classList.remove('visible');
+    const cards=document.querySelectorAll('.flip-card');
+    const STAGGER=100,DEAL_DUR=500;
+    cards.forEach((card,i)=>{
+      const angle=Math.random()*Math.PI*2,dist=160+Math.random()*100;
+      card.style.setProperty('--ox',Math.round(Math.cos(angle)*dist)+'px');
+      card.style.setProperty('--oy',Math.round(Math.sin(angle)*dist-60)+'px');
+      card.style.setProperty('--rot',((Math.random()-.5)*40)+'deg');
+      card.style.animationDelay=(i*STAGGER)+'ms';
+      card.classList.add('dealing');playDealSound(i*STAGGER/1000);
+      setTimeout(()=>{card.classList.remove('dealing');card.style.animationDelay='';},i*STAGGER+DEAL_DUR+50);
+    });
     setTimeout(()=>{isShuffling=false;if(onComplete)onComplete();},cards.length*STAGGER+DEAL_DUR+100);
   },1650);
 }
 
-function buildCards(){const grid=document.getElementById('cardGrid');grid.innerHTML='';scratchCards=[];const shuffled=fisherYates([...participants]);
-  shuffled.forEach((p,idx)=>{const cardEl=document.createElement('div');cardEl.className=`flip-card ct-${idx%10}`;cardEl.innerHTML=`<div class="flip-card-inner"><div class="flip-front"><div class="front-num">#${String(idx+1).padStart(2,'0')}</div><div class="front-icon">🃏</div><div class="front-label">Tap to reveal</div><div class="front-hint">✦ tap ✦</div></div><div class="flip-back"><div class="back-rank">Winner</div><div class="back-trophy">🏆</div><div class="back-line"></div><div class="back-name">${escHtml(p.name)}</div><div class="back-month">—</div><div class="back-amount">₹—</div></div></div>`;grid.appendChild(cardEl);scratchCards.push(new FlipCard(cardEl,p.name));});
-  const nodes=[...grid.children];fisherYates(nodes);nodes.forEach((node,pos)=>{const n=node.querySelector('.front-num');if(n)n.textContent='#'+String(pos+1).padStart(2,'0');grid.appendChild(node);});}
+function buildCards(){
+  const grid=document.getElementById('cardGrid');grid.innerHTML='';scratchCards=[];
+  const shuffled=fisherYates([...participants]);
+  shuffled.forEach((p,idx)=>{
+    const el=document.createElement('div');el.className=`flip-card ct-${idx%10}`;
+    el.innerHTML=`<div class="flip-card-inner"><div class="flip-front"><div class="front-num">#${String(idx+1).padStart(2,'0')}</div><div class="front-icon">🃏</div><div class="front-label">Tap to reveal</div><div class="front-hint">✦ tap ✦</div></div><div class="flip-back"><div class="back-rank">Winner</div><div class="back-trophy">🏆</div><div class="back-line"></div><div class="back-name">${escHtml(p.name)}</div><div class="back-month">—</div><div class="back-amount">₹—</div></div></div>`;
+    grid.appendChild(el);scratchCards.push(new FlipCard(el,p.name));
+  });
+  const nodes=[...grid.children];fisherYates(nodes);
+  nodes.forEach((n,pos)=>{const nm=n.querySelector('.front-num');if(nm)nm.textContent='#'+String(pos+1).padStart(2,'0');grid.appendChild(n);});
+}
 
+/* ═══════════════════════════════════════════════════════════════
+   DRAW FLOW
+═══════════════════════════════════════════════════════════════ */
 function startDraw(){
-  winners=[];const sn=document.getElementById('sessionName').value;
+  winners=[];pendingWinData=null;
+  const sn=document.getElementById('sessionName').value;
   document.getElementById('drawChittyTitle').textContent=sn;
   document.getElementById('hudTotal').textContent=participants.length;
   document.getElementById('hudRemaining').textContent=participants.length;
@@ -663,25 +848,59 @@ function showWinnerPopup(winData){
   popupOpen=true;winners.push(winData);
   document.getElementById('hudRemaining').textContent=Math.max(0,participants.length-winners.length);
   document.getElementById('hudDrawn').textContent=winners.length;
-  const emojis=['🥇','🥈','🥉'];document.getElementById('popupEmoji').textContent=winData.rank<=3?emojis[winData.rank-1]:'🏅';
+  const emojis=['🥇','🥈','🥉'];
+  document.getElementById('popupEmoji').textContent=winData.rank<=3?emojis[winData.rank-1]:'🏅';
   document.getElementById('popupRank').textContent='Winner #'+winData.rank;
   document.getElementById('popupName').textContent=winData.name;
   document.getElementById('popupMonth').textContent='📅 '+winData.month;
   document.getElementById('popupAmount').textContent='₹'+winData.total.toLocaleString('en-IN');
   const nextBtn=document.getElementById('popupNext');const allDone=winners.length>=participants.length;
-  if(allDone){nextBtn.textContent='View Full Report →';nextBtn.onclick=()=>{stopSpeaking();closePopup();switchTab(2);setTimeout(()=>{saveCurrentSession(true);playVictory();},200);};}
-  else{nextBtn.textContent='Next Card →';nextBtn.onclick=()=>{stopSpeaking();closePopup();};}
-  document.getElementById('winnerOverlay').classList.add('show');addWinnerRow(winData);saveCurrentSession(allDone);announceWinner(winData.rank,winData.name,winData.month,winData.total);
+  if(allDone){nextBtn.textContent='View Full Report →';nextBtn.onclick=()=>{stopSpeaking();pendingWinData=null;closePopup();switchTab(2);setTimeout(()=>{saveCurrentSession(true);playVictory();},200);};}
+  else{nextBtn.textContent='Next Card →';nextBtn.onclick=()=>{stopSpeaking();pendingWinData=null;closePopup();};}
+  document.getElementById('winnerOverlay').classList.add('show');
+  addWinnerRow(winData);
+  saveCurrentSession(allDone);
+  // Announce — works on Android; iOS retries on modal tap via event listener
+  announceWinner(winData.rank,winData.name,winData.month,winData.total);
 }
-function addWinnerRow(w){const hint=document.getElementById('winnersEmptyHint');if(hint)hint.style.display='none';document.getElementById('winnersCount').textContent=winners.length+' / '+participants.length;const rkc=w.rank===1?'wr-rank-1':w.rank===2?'wr-rank-2':w.rank===3?'wr-rank-3':'wr-rank-n';const row=document.createElement('div');row.className='winner-row';row.innerHTML=`<div class="wr-rank ${rkc}">${w.rank}</div><div class="wr-info"><div class="wr-name">${escHtml(w.name)}</div><div class="wr-month">${w.month}</div></div><div class="wr-amount">₹${w.total.toLocaleString('en-IN')}</div>`;document.getElementById('winnersList').appendChild(row);setTimeout(()=>row.scrollIntoView({behavior:'smooth',block:'nearest'}),100);}
-function closePopup(){stopSpeaking();document.getElementById('winnerOverlay').classList.remove('show');popupOpen=false;if(winners.length>=participants.length)showAllDone();else runShuffleSequence(null,true);}
-function showAllDone(){document.getElementById('allDonePlaceholder').innerHTML=`<div class="all-done-banner"><div class="all-done-title">🎉 All Winners Revealed!</div><div class="all-done-actions"><button class="btn-primary" onclick="switchTab(2)" style="flex:1">View Report →</button><button class="btn-secondary" onclick="confirmReset()" style="flex:1">↺ New Chitty</button></div></div>`;playVictory();}
 
+function addWinnerRow(w){
+  const hint=document.getElementById('winnersEmptyHint');if(hint)hint.style.display='none';
+  document.getElementById('winnersCount').textContent=winners.length+' / '+participants.length;
+  const rkc=w.rank===1?'wr-rank-1':w.rank===2?'wr-rank-2':w.rank===3?'wr-rank-3':'wr-rank-n';
+  const row=document.createElement('div');row.className='winner-row';
+  row.innerHTML=`<div class="wr-rank ${rkc}">${w.rank}</div><div class="wr-info"><div class="wr-name">${escHtml(w.name)}</div><div class="wr-month">${w.month}</div></div><div class="wr-amount">₹${w.total.toLocaleString('en-IN')}</div>`;
+  document.getElementById('winnersList').appendChild(row);
+  setTimeout(()=>row.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function closePopup(){
+  stopSpeaking();pendingWinData=null;
+  document.getElementById('winnerOverlay').classList.remove('show');
+  popupOpen=false;
+  if(winners.length>=participants.length)showAllDone();
+  else runShuffleSequence(null,true);
+}
+
+function showAllDone(){
+  document.getElementById('allDonePlaceholder').innerHTML=`<div class="all-done-banner"><div class="all-done-title">🎉 All Winners Revealed!</div><div class="all-done-actions"><button class="btn-primary" onclick="switchTab(2)" style="flex:1">View Report →</button><button class="btn-secondary" onclick="confirmReset()" style="flex:1">↺ New Chitty</button></div></div>`;
+  playVictory();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   REPORT
+═══════════════════════════════════════════════════════════════ */
 function renderReport(){const m=parseFloat(document.getElementById('monthly').value)||0;const t=m*participants.length;document.getElementById('rTotal').textContent=participants.length;document.getElementById('rMonthly').textContent='₹'+m.toLocaleString('en-IN');document.getElementById('rChitty').textContent='₹'+t.toLocaleString('en-IN');if(!winners.length){document.getElementById('reportEmpty').style.display='';document.getElementById('reportContent').style.display='none';return;}document.getElementById('reportEmpty').style.display='none';document.getElementById('reportContent').style.display='';document.getElementById('exportBtn').style.display='flex';document.getElementById('resetBtn').style.display='flex';const rc=r=>r===1?'r1':r===2?'r2':r===3?'r3':'rn';document.getElementById('reportBody').innerHTML=winners.map(w=>`<tr><td class="c"><span class="rank-badge ${rc(w.rank)}">${w.rank}</span></td><td class="col-name">${escHtml(w.name)}</td><td class="col-month">${w.month}</td><td class="col-amt">₹${w.total.toLocaleString('en-IN')}</td></tr>`).join('');const rem=participants.length-winners.length;const pn=document.getElementById('pendingNote');if(rem>0){pn.style.display='';pn.textContent='⏳ '+rem+' card'+(rem!==1?'s':'')+' yet to be drawn.';}else pn.style.display='none';}
 
+/* ═══════════════════════════════════════════════════════════════
+   PDF
+═══════════════════════════════════════════════════════════════ */
 function buildPDF(pc,sWinners,sStartMonth,sMonthly,sTotal,sName){const{jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});const W=doc.internal.pageSize.getWidth();const now=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});doc.setFillColor(22,43,32);doc.rect(0,0,W,40,'F');doc.setFillColor(181,128,26);doc.rect(0,37,W,3,'F');doc.setFont('helvetica','bold');doc.setFontSize(22);doc.setTextColor(232,196,106);doc.text('Chitty Draw — Winners Report',W/2,17,{align:'center'});doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(160,190,160);doc.text((sName||'Chitty')+'   |   Generated: '+now,W/2,28,{align:'center'});let y=50;const cds=[{label:'Participants',value:String(pc||0)},{label:'Starting Month',value:MONTHS[sStartMonth]||'—'},{label:'Monthly (₹)',value:Number(sMonthly||0).toLocaleString('en-IN')},{label:'Total Chitty (₹)',value:Number(sTotal||0).toLocaleString('en-IN')}];const cw=(W-30)/4;cds.forEach((c,i)=>{const cx=14+i*(cw+2);doc.setFillColor(248,245,239);doc.roundedRect(cx,y,cw,24,2,2,'F');doc.setDrawColor(181,128,26);doc.setLineWidth(.3);doc.roundedRect(cx,y,cw,24,2,2,'S');doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(143,160,139);doc.text(c.label.toUpperCase(),cx+cw/2,y+8,{align:'center'});doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(181,128,26);doc.text(c.value,cx+cw/2,y+18,{align:'center'});});y+=32;doc.setFontSize(12);doc.setFont('helvetica','bold');doc.setTextColor(22,43,32);doc.text('Winners List',14,y);doc.setDrawColor(181,128,26);doc.setLineWidth(.4);doc.line(14,y+2,W-14,y+2);y+=8;doc.autoTable({startY:y,head:[['#','Name','Month','Amount']],body:(sWinners||[]).map(w=>[w.rank,w.name,w.month,'₹'+w.total.toLocaleString('en-IN')]),theme:'grid',headStyles:{fillColor:[22,43,32],textColor:[232,196,106],fontStyle:'bold',fontSize:10,halign:'center'},columnStyles:{0:{halign:'center',cellWidth:14,fontStyle:'bold'},1:{cellWidth:75,fontStyle:'bold'},2:{cellWidth:38,halign:'center'},3:{halign:'right',fontStyle:'bold',textColor:[181,128,26]}},alternateRowStyles:{fillColor:[248,245,239]},styles:{fillColor:[255,255,255],textColor:[30,45,30],lineColor:[220,210,196],lineWidth:.25},bodyStyles:{fontSize:10},margin:{left:14,right:14}});const pcount=doc.internal.getNumberOfPages();for(let p=1;p<=pcount;p++){doc.setPage(p);doc.setFillColor(248,245,239);doc.rect(0,doc.internal.pageSize.getHeight()-12,W,12,'F');doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(143,160,139);doc.text('Chitty Draw System  |  Confidential',14,doc.internal.pageSize.getHeight()-4);doc.text('Page '+p+' of '+pcount,W-14,doc.internal.pageSize.getHeight()-4,{align:'right'});}return doc;}
 function exportPDF(){const sn=document.getElementById('sessionName').value||'Chitty Draw';const monthly=parseFloat(document.getElementById('monthly').value)||0;const smIdx=parseInt(document.getElementById('startMonth').value)||0;const doc=buildPDF(participants.length,winners,smIdx,monthly,monthly*participants.length,sn);doc.save(sn.replace(/\s+/g,'_')+'_Report.pdf');}
 
+/* ═══════════════════════════════════════════════════════════════
+   HISTORY
+═══════════════════════════════════════════════════════════════ */
 const SK='chittyDrawSessions_v2';
 function loadSessions(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}}
 function saveSessions(s){localStorage.setItem(SK,JSON.stringify(s));}
@@ -701,11 +920,14 @@ function renderHistory(){
 }
 function exportSessionPDF(sessionId){const s=loadSessions().find(x=>x.id===sessionId);if(!s)return;const doc=buildPDF(s.participantCount,s.winners,s.startMonth,s.monthly,s.total,s.name);doc.save(s.name.replace(/\s+/g,'_')+'_Report.pdf');}
 
+/* ═══════════════════════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════════════════════ */
 function confirmReset(){if(!confirm('Reset and start a new Chitty?\n\nAll current data will be cleared.'))return;resetAll();}
-function resetAll(){stopSpeaking();popupOpen=false;isShuffling=false;participants=[];winners=[];scratchCards=[];['sessionName','monthly'].forEach(id=>document.getElementById(id).value='');document.getElementById('startMonth').value='0';document.getElementById('totalBox').textContent='₹ 0';document.getElementById('startBtn').disabled=true;document.getElementById('chipGrid').innerHTML='';document.getElementById('chipsMeta').style.display='none';document.getElementById('noParticipants').style.display='';document.getElementById('sidePill').style.display='none';document.getElementById('statusDot').style.display='none';document.getElementById('mobChittyName').style.display='none';document.getElementById('cardGrid').innerHTML='';document.getElementById('shuffleOverlay').classList.remove('visible');document.getElementById('winnersList').innerHTML='<div class="winners-empty" id="winnersEmptyHint">Tap a card to reveal</div>';document.getElementById('winnersCount').textContent='0 / 0';document.getElementById('allDonePlaceholder').innerHTML='';document.getElementById('reportEmpty').style.display='';document.getElementById('reportContent').style.display='none';document.getElementById('exportBtn').style.display='none';document.getElementById('resetBtn').style.display='none';document.getElementById('winnerOverlay').classList.remove('show');switchTab(0);}
+function resetAll(){stopSpeaking();popupOpen=false;isShuffling=false;participants=[];winners=[];scratchCards=[];pendingWinData=null;['sessionName','monthly'].forEach(id=>document.getElementById(id).value='');document.getElementById('startMonth').value='0';document.getElementById('totalBox').textContent='₹ 0';document.getElementById('startBtn').disabled=true;document.getElementById('chipGrid').innerHTML='';document.getElementById('chipsMeta').style.display='none';document.getElementById('noParticipants').style.display='';document.getElementById('sidePill').style.display='none';document.getElementById('statusDot').style.display='none';document.getElementById('mobChittyName').style.display='none';document.getElementById('cardGrid').innerHTML='';document.getElementById('shuffleOverlay').classList.remove('visible');document.getElementById('winnersList').innerHTML='<div class="winners-empty" id="winnersEmptyHint">Tap a card to reveal</div>';document.getElementById('winnersCount').textContent='0 / 0';document.getElementById('allDonePlaceholder').innerHTML='';document.getElementById('reportEmpty').style.display='';document.getElementById('reportContent').style.display='none';document.getElementById('exportBtn').style.display='none';document.getElementById('resetBtn').style.display='none';document.getElementById('winnerOverlay').classList.remove('show');switchTab(0);}
 
+/* INIT */
 updateHistoryBadge();
-if('speechSynthesis' in window){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 </script>
 </body>
