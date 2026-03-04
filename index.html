@@ -645,10 +645,36 @@ function warmUpSpeech(){
 
 function getBestVoice(){
   const voices=cachedVoices.length?cachedVoices:window.speechSynthesis.getVoices();
+  // Female voice names across iOS, Android, Windows, macOS
+  const femaleNames=[
+    'Samantha',          // iOS default female (en-US)
+    'Karen',             // iOS en-AU female
+    'Moira',             // iOS en-IE female
+    'Tessa',             // iOS en-ZA female
+    'Veena',             // iOS en-IN female
+    'Fiona',             // macOS en-Scotland
+    'Victoria',          // macOS en-US
+    'Google UK English Female',   // Android / Chrome desktop
+    'Google US English Female',   // some Android builds
+    'Microsoft Zira',    // Windows en-US female
+    'Microsoft Susan',   // Windows
+    'Microsoft Hazel',   // Windows en-GB female
+    'Microsoft Linda',   // Windows
+    'Microsoft Emma',    // Windows en-GB female
+    'Microsoft Aria',    // Windows en-US female (newer)
+    'Zira',
+    'Susan',
+  ];
+  // 1. Try known female names, prefer en-IN or en first
+  for(const name of femaleNames){
+    const v=voices.find(v=>v.name.includes(name)&&v.lang.startsWith('en'));
+    if(v)return v;
+  }
+  // 2. Fallback: any voice whose name contains "female" (case-insensitive)
+  const byLabel=voices.find(v=>/female/i.test(v.name)&&v.lang.startsWith('en'));
+  if(byLabel)return byLabel;
+  // 3. Fallback: en-IN, then any English
   return voices.find(v=>v.lang==='en-IN')||
-         voices.find(v=>v.name.includes('Samantha'))||
-         voices.find(v=>v.name.includes('Google UK English Female'))||
-         voices.find(v=>v.name.includes('Google')&&v.lang.startsWith('en'))||
          voices.find(v=>v.lang.startsWith('en'))||null;
 }
 
