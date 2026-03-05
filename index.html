@@ -857,6 +857,36 @@ function haptic(duration=30){
   if('vibrate' in navigator)navigator.vibrate(duration);
 }
 
+/* ─── AUDIO UNLOCK (iOS + Android require user-gesture unlock) ─── */
+let audioUnlocked=false;
+function unlockAudio(){
+  if(audioUnlocked)return;
+  // Unlock AudioContext
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    // Play a silent buffer to fully unlock on iOS
+    const buf=audioCtx.createBuffer(1,1,22050);
+    const src=audioCtx.createBufferSource();
+    src.buffer=buf;src.connect(audioCtx.destination);
+    src.start(0);src.stop(0.001);
+  }catch(e){}
+  // Unlock SpeechSynthesis on iOS — must call speak() inside a user gesture
+  try{
+    if('speechSynthesis' in window){
+      const u=new SpeechSynthesisUtterance('');
+      u.volume=0;u.rate=10;
+      window.speechSynthesis.speak(u);
+      window.speechSynthesis.cancel();
+    }
+  }catch(e){}
+  audioUnlocked=true;
+}
+// Attach unlock to every possible first-touch across the whole document
+['touchstart','touchend','mousedown','keydown'].forEach(evt=>{
+  document.addEventListener(evt,unlockAudio,{once:false,passive:true});
+});
+
 /* ─── APP STATE ─── */
 let participants=[],winners=[],scratchCards=[];
 let soundEnabled=true,audioCtx=null,popupOpen=false,isShuffling=false;
@@ -933,30 +963,171 @@ function renderChips(){
     grid.innerHTML=participants.map((p,i)=>`<div class="chip"><span><span class="chip-num">${String(i+1).padStart(2,'0')}.</span>${escHtml(p.name)}</span><button class="chip-del" onclick="removeParticipant(${p.id})" aria-label="Remove ${escHtml(p.name)}">×</button></div>`).join('');}
 }
 
-/* ─── AUDIO ─── */
-function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx;}
-function playTone(freq,type,dur,vol,delay){if(!soundEnabled)return;try{const ctx=getAudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type=type||'sine';osc.frequency.setValueAtTime(freq,ctx.currentTime+(delay||0));gain.gain.setValueAtTime(0,ctx.currentTime+(delay||0));gain.gain.linearRampToValueAtTime(vol||0.25,ctx.currentTime+(delay||0)+0.01);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+(delay||0)+dur);osc.start(ctx.currentTime+(delay||0));osc.stop(ctx.currentTime+(delay||0)+dur);}catch(e){}}
-function playShuffleSound(){if(!soundEnabled)return;[180,200,220,240,260,280,300,320].forEach((f,i)=>playTone(f,'sawtooth',0.06,0.12,i*0.055));}
-function playDealSound(delay){playTone(800,'triangle',0.07,0.15,delay);playTone(600,'triangle',0.05,0.08,delay+0.04);}
-function playRevealSound(){[{f:523,d:.1,v:.3,t:0},{f:659,d:.1,v:.3,t:.12},{f:784,d:.1,v:.3,t:.24},{f:1047,d:.22,v:.35,t:.36},{f:880,d:.1,v:.25,t:.46},{f:1047,d:.35,v:.4,t:.56}].forEach(n=>playTone(n.f,'triangle',n.d,n.v,n.t));}
-function playVictory(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>playTone(f,'triangle',.28,.35,[0,.1,.2,.3,.45,.55,.65][i]));}
-function playClapping(durationSec){if(!soundEnabled)return;try{const ctx=getAudioCtx();const numClaps=Math.round((durationSec||4)*2.5);for(let i=0;i<numClaps;i++){const t=ctx.currentTime+i/2.5;const bufLen=Math.floor(ctx.sampleRate*0.08);const buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);const data=buf.getChannelData(0);for(let s=0;s<bufLen;s++)data[s]=(Math.random()*2-1)*Math.pow(1-s/bufLen,3);const src=ctx.createBufferSource();src.buffer=buf;const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=0.8;const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800;const gain=ctx.createGain();gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(0.55,t+0.005);gain.gain.exponentialRampToValueAtTime(0.001,t+0.08);src.connect(bp);bp.connect(hp);hp.connect(gain);gain.connect(ctx.destination);src.start(t);src.stop(t+0.1);}}catch(e){}}
-function toggleSound(){soundEnabled=!soundEnabled;const on=soundEnabled;document.getElementById('soundBtnD').textContent=on?'🔊 Sound On':'🔇 Sound Off';document.getElementById('soundBtnM').textContent=on?'🔊':'🔇';if(!on){window.speechSynthesis&&window.speechSynthesis.cancel();document.getElementById('speakingIndicator').classList.remove('active');}haptic(25);}
+/* ─── AUDIO ENGINE ─── */
+function getAudioCtx(){
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended')audioCtx.resume();
+  return audioCtx;
+}
+function playTone(freq,type,dur,vol,delay){
+  if(!soundEnabled)return;
+  try{
+    const ctx=getAudioCtx();
+    const t=ctx.currentTime+(delay||0);
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.type=type||'sine';
+    osc.frequency.setValueAtTime(freq,t);
+    gain.gain.setValueAtTime(0,t);
+    gain.gain.linearRampToValueAtTime(vol||0.25,t+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    osc.start(t);osc.stop(t+dur+0.02);
+  }catch(e){}
+}
+function playShuffleSound(){if(!soundEnabled)return;[180,200,220,240,260,280,300,320].forEach((f,i)=>playTone(f,'sawtooth',0.06,0.10,i*0.055));}
+function playDealSound(delay){playTone(800,'triangle',0.07,0.14,delay);playTone(600,'triangle',0.05,0.08,delay+0.04);}
+function playRevealSound(){[{f:523,d:.1,v:.28,t:0},{f:659,d:.1,v:.28,t:.12},{f:784,d:.1,v:.28,t:.24},{f:1047,d:.22,v:.32,t:.36},{f:880,d:.1,v:.22,t:.46},{f:1047,d:.35,v:.38,t:.56}].forEach(n=>playTone(n.f,'triangle',n.d,n.v,n.t));}
+function playVictory(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>playTone(f,'triangle',.28,.32,[0,.1,.2,.3,.45,.55,.65][i]));}
+function playClapping(durationSec){
+  if(!soundEnabled)return;
+  try{
+    const ctx=getAudioCtx();
+    const numClaps=Math.round((durationSec||4)*2.5);
+    for(let i=0;i<numClaps;i++){
+      const t=ctx.currentTime+i/2.5;
+      const bufLen=Math.floor(ctx.sampleRate*0.08);
+      const buf=ctx.createBuffer(1,bufLen,ctx.sampleRate);
+      const data=buf.getChannelData(0);
+      for(let s=0;s<bufLen;s++)data[s]=(Math.random()*2-1)*Math.pow(1-s/bufLen,3);
+      const src=ctx.createBufferSource();src.buffer=buf;
+      const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=0.8;
+      const hp=ctx.createBiquadFilter();hp.type='highpass';hp.frequency.value=800;
+      const gain=ctx.createGain();
+      gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(0.5,t+0.005);gain.gain.exponentialRampToValueAtTime(0.0001,t+0.08);
+      src.connect(bp);bp.connect(hp);hp.connect(gain);gain.connect(ctx.destination);
+      src.start(t);src.stop(t+0.12);
+    }
+  }catch(e){}
+}
+function updateSoundBtns(){
+  const on=soundEnabled;
+  document.getElementById('soundBtnD').textContent=on?'🔊 Sound On':'🔇 Sound Off';
+  document.getElementById('soundBtnM').textContent=on?'🔊':'🔇';
+}
+function toggleSound(){
+  unlockAudio();
+  soundEnabled=!soundEnabled;
+  updateSoundBtns();
+  if(!soundEnabled){stopSpeaking();}
+  else{
+    // Play a quick test tone to confirm audio is working
+    playTone(880,'sine',0.1,0.15,0);
+  }
+  haptic(25);
+}
+
+/* ─── SPEECH SYNTHESIS — mobile-safe ─── */
+// iOS needs voices loaded; Android Chrome needs a short delay after cancel()
+let _ttsReady=false;
+let _voiceCache=null;
+
+function getTTSVoice(){
+  if(_voiceCache)return _voiceCache;
+  const voices=window.speechSynthesis.getVoices();
+  // Prefer: Google US English > Samantha (iOS) > Daniel (iOS UK) > any English
+  _voiceCache=
+    voices.find(v=>v.name==='Google US English')||
+    voices.find(v=>v.name.includes('Samantha'))||
+    voices.find(v=>v.name.includes('Daniel'))||
+    voices.find(v=>v.name.includes('Karen'))||
+    voices.find(v=>v.lang==='en-US')||
+    voices.find(v=>v.lang.startsWith('en'))||
+    (voices.length?voices[0]:null);
+  return _voiceCache;
+}
 
 function announceWinner(rank,name,month,amount){
   if(!soundEnabled||!('speechSynthesis' in window))return;
+
+  // Always cancel any pending speech first
   window.speechSynthesis.cancel();
+  _voiceCache=null; // refresh voice cache each time
+
   const ords=['','First','Second','Third','Fourth','Fifth','Sixth','Seventh','Eighth','Ninth','Tenth'];
   const rw=rank<=10?ords[rank]:'Number '+rank;
   const c=getCurr();
-  const text=`Congratulations! The ${rw} winner is ${name}! ${name} wins the Chitty for ${month}. The amount is ${Number(amount||0).toLocaleString('en-US')} ${c.spoken}!`;
-  const utt=new SpeechSynthesisUtterance(text);utt.rate=.88;utt.pitch=1.1;utt.volume=1;
-  const v=window.speechSynthesis.getVoices();const pv=v.find(x=>x.lang.startsWith('en')&&(x.name.includes('Google')||x.name.includes('Samantha')||x.name.includes('Daniel')))||v.find(x=>x.lang.startsWith('en'));
-  if(pv)utt.voice=pv;
-  const ind=document.getElementById('speakingIndicator');utt.onstart=()=>ind.classList.add('active');utt.onend=utt.onerror=()=>ind.classList.remove('active');
-  setTimeout(()=>window.speechSynthesis.speak(utt),600);
+  const amtStr=Number(amount||0).toLocaleString('en-US');
+  const text=`Congratulations! The ${rw} winner is ${name}! ${name} wins the Chitty for ${month}. The prize is ${amtStr} ${c.spoken}!`;
+
+  const ind=document.getElementById('speakingIndicator');
+
+  function doSpeak(){
+    try{
+      const utt=new SpeechSynthesisUtterance(text);
+      utt.rate=0.88;utt.pitch=1.1;utt.volume=1.0;utt.lang='en-US';
+
+      const voice=getTTSVoice();
+      if(voice)utt.voice=voice;
+
+      utt.onstart=()=>ind.classList.add('active');
+      utt.onend=()=>ind.classList.remove('active');
+      utt.onerror=(e)=>{
+        ind.classList.remove('active');
+        // iOS sometimes fires 'interrupted' — retry once
+        if(e.error==='interrupted'&&soundEnabled){
+          setTimeout(()=>{
+            try{
+              const u2=new SpeechSynthesisUtterance(text);
+              u2.rate=0.88;u2.pitch=1.1;u2.volume=1.0;u2.lang='en-US';
+              const v2=getTTSVoice();if(v2)u2.voice=v2;
+              u2.onstart=()=>ind.classList.add('active');
+              u2.onend=u2.onerror=()=>ind.classList.remove('active');
+              window.speechSynthesis.speak(u2);
+            }catch(e2){}
+          },400);
+        }
+      };
+
+      // iOS Safari: speechSynthesis can pause itself mid-sentence — keep it alive
+      const keepAlive=setInterval(()=>{
+        if(!window.speechSynthesis.speaking){clearInterval(keepAlive);return;}
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      },5000);
+      utt.onend=()=>{clearInterval(keepAlive);ind.classList.remove('active');};
+      utt.onerror=()=>{clearInterval(keepAlive);ind.classList.remove('active');};
+
+      window.speechSynthesis.speak(utt);
+    }catch(e){ind.classList.remove('active');}
+  }
+
+  // Wait for voices to be available (critical on Android Chrome first load)
+  function speakWhenReady(){
+    const voices=window.speechSynthesis.getVoices();
+    if(voices.length>0){
+      // Small delay: lets AudioContext sounds finish their attack first
+      setTimeout(doSpeak, 700);
+    } else {
+      // Voices not loaded yet — wait for the event
+      window.speechSynthesis.onvoiceschanged=()=>{
+        window.speechSynthesis.onvoiceschanged=null;
+        setTimeout(doSpeak,700);
+      };
+      // Fallback if onvoiceschanged never fires (some Android browsers)
+      setTimeout(()=>{
+        if(!window.speechSynthesis.speaking)doSpeak();
+      },1200);
+    }
+  }
+  speakWhenReady();
 }
-function stopSpeaking(){if('speechSynthesis' in window)window.speechSynthesis.cancel();document.getElementById('speakingIndicator').classList.remove('active');}
+
+function stopSpeaking(){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+  }
+  document.getElementById('speakingIndicator').classList.remove('active');
+}
 
 /* ─── PARTICLES ─── */
 const pCanvas=document.getElementById('particleCanvas');const pCtx=pCanvas.getContext('2d');let fwParticles=[];
@@ -974,7 +1145,7 @@ class FlipCard{
     el.addEventListener('touchend',e=>{e.preventDefault();this.onTap();},{passive:false});
     el.addEventListener('click',this.onTap.bind(this));
   }
-  onTap(){if(this.revealed||popupOpen||isShuffling)return;haptic(40);getAudioCtx();this.reveal();}
+  onTap(){if(this.revealed||popupOpen||isShuffling)return;haptic(40);unlockAudio();getAudioCtx();this.reveal();}
   reveal(){
     if(this.revealed)return;this.revealed=true;this.el.classList.add('revealed');
     const monthly=parseFloat(document.getElementById('monthly').value)||0;
@@ -1011,7 +1182,7 @@ function buildCards(){const grid=document.getElementById('cardGrid');grid.innerH
   const nodes=[...grid.children];fisherYates(nodes);nodes.forEach((node,pos)=>{const n=node.querySelector('.front-num');if(n)n.textContent='#'+String(pos+1).padStart(2,'0');grid.appendChild(node);});
 }
 function startDraw(){
-  haptic([20,30,20]);winners=[];const sn=document.getElementById('sessionName').value;
+  haptic([20,30,20]);unlockAudio();winners=[];const sn=document.getElementById('sessionName').value;
   document.getElementById('drawChittyTitle').textContent=sn;
   document.getElementById('hudTotal').textContent=participants.length;
   document.getElementById('hudRemaining').textContent=participants.length;
@@ -1107,7 +1278,17 @@ function resetAll(){stopSpeaking();popupOpen=false;isShuffling=false;participant
 
 /* ─── INIT ─── */
 updateHistoryBadge();
-if('speechSynthesis' in window){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
+// Pre-warm speech synthesis voice list on both iOS and Android
+if('speechSynthesis' in window){
+  // Trigger voice list load
+  let _voices=window.speechSynthesis.getVoices();
+  if(_voices.length===0){
+    window.speechSynthesis.onvoiceschanged=()=>{
+      _voiceCache=null; // reset so getTTSVoice() re-picks on next call
+      window.speechSynthesis.onvoiceschanged=null;
+    };
+  }
+}
 document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
 
 // Prevent scroll bounce on iOS
